@@ -47,11 +47,12 @@ pip-install: ##@ Install python dependencies using pip.
 
 .PHONY: pip-upgrade
 pip-upgrade: ##@ Upgrade python dependencies using pip. This ignore pinning versions in requirements.txt.
+##@		But only updates packages that are in that file.
 	${PIP} install --upgrade $(shell sed -e '/^[a-zA-Z0-9\._-]/!d; s/=.*$$//' requirements.txt)
 
 
-.PHONY: pip-freeze
-pip-freeze: ##@ Like pip freeze but only for packages that are in requirements.txt.
+.PHONY: pip-pinning
+pip-pinning: ##@ Like pip freeze but pinning only packages that are in requirements.txt.
 ##@		This doesn't include any package that could be present in the virtualenv
 ##@		as result of manual installs or resolved dependencies.
 	REQ="$(shell ${PIP} freeze --quiet --requirement requirements.txt | sed '/^## The following requirements were added by pip freeze:$$/,$$ d')";\
