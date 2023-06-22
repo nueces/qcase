@@ -1,0 +1,11 @@
+# The idea of this configuration file is to be a single source of truth for the bootstrap scripts and terraform.
+project_name: qcase
+aws_region: eu-central-1
+logs_directory: logs
+
+
+# the bucket_suffix_name is prefixed with the account_id and region to create the bucket name
+# ex: 123456789012-eu-central-1-terraform-backend-project_name
+terraform:
+  state_name: dev
+  bucket_suffix_name: terraform-backend-qcase
