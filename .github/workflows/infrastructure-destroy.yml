@@ -1,0 +1,75 @@
+---
+
+name: "Infrastructure Reclaim/Destroy"
+
+on:
+  push:
+    branches:
+      - master
+    paths:
+      - infrastructure/**
+
+  pull_request:
+    branches:
+      - master
+    paths:
+      - infrastructure/**
+
+  workflow_dispatch:
+    branches:
+      - master
+    inputs:
+      confirm_destroy_repository_name:
+        description: 'Confirm that you want to destroy the infrastructure introducing the <owner/repository name>'
+        type: string
+        required: true
+
+env:
+  TF_LOG: INFO
+  AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+  AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+
+jobs:
+  terraform:
+    name: "Infrastructure Destroy"
+    if: ${{ inputs.confirm_destroy_repository_name == github.event.repository.name }}
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash
+        working-directory: ./infrastructure
+
+    steps:
+      - name: Checkout the repository to the runner
+        uses: actions/checkout@v3.5.3
+
+      - name: Setup Terraform with specified version on the runner
+        uses: hashicorp/setup-terraform@v2.0.3
+        with:
+          terraform_version: 1.5.1
+
+      - name: Terraform init
+        id: init
+        run: terraform init -lockfile=readonly
+
+      - name: Terraform format
+        id: fmt
+        run: terraform fmt -check -diff
+
+      - name: Terraform validate
+        id: validate
+        run: terraform validate
+
+      - name: Terraform plan destroy
+        id: plan
+        if: github.event_name == 'pull_request'
+        run: terraform plan -destroy -no-color -input=false
+        continue-on-error: true
+
+      - name: Terraform Plan Status
+        if: steps.plan.outcome == 'failure'
+        run: exit 1
+
+      - name: Terraform Apply
+        if: github.ref == 'refs/heads/master' && github.event_name == 'push'
+        run: terraform destroy -no-color -auto-approve -input=false
