@@ -19,11 +19,12 @@ PROJECT_CONFIGURATION=configuration.yml
 # So we are going to prefix all commands with virtualenv bin path.
 VENV_PATH = venv
 # python commands
-PYTHON = ${VENV_PATH}/bin/python3
-PIP    = ${VENV_PATH}/bin/pip
-BLACK  = ${VENV_PATH}/bin/black
-ISORT  = ${VENV_PATH}/bin/isort
-PYLINT = ${VENV_PATH}/bin/pylint
+PYTHON   = ${VENV_PATH}/bin/python3
+PIP      = ${VENV_PATH}/bin/pip
+BLACK    = ${VENV_PATH}/bin/black
+ISORT    = ${VENV_PATH}/bin/isort
+PYLINT   = ${VENV_PATH}/bin/pylint
+YAMLLINT = ${VENV_PATH}/bin/yamllint -c .yamllint.yml
 
 #############################################################################
 
@@ -86,6 +87,11 @@ terraform-lint: ##@Run linting tools for terraform code in the ${INFRASTRUCTURE}
 	$(info Running Terraform linting tools.)
 	make -C ${INFRASTRUCTURE} fmt validate
 
+.PHONY: yaml-lint
+yaml-lint: ##@ Run linting tools for yaml code in the .github directory and the configuration.yml, and .yamllint.yml files.
+	$(info Running Yaml linting tools.)
+	${YAMLLINT} .github ${PROJECT_CONFIGURATION} .yamllint.yml
+
 .PHONY: lint
-lint: python-lint terraform-lint ##@ Run linting tools for Python and Terraform code.
+lint: python-lint yaml-lint terraform-lint ##@ Run linting tools for Python and Terraform code.
 	$(info Lint done!)
