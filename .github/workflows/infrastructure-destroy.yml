@@ -20,7 +20,7 @@ on:
       - master
     inputs:
       confirm_destroy_repository_name:
-        description: 'Confirm that you want to destroy the infrastructure introducing the <owner/repository name>'
+        description: 'Confirm that you want to destroy the infrastructure introducing the <repository name>'
         type: string
         required: true
 
@@ -70,6 +70,6 @@ jobs:
         if: steps.plan.outcome == 'failure'
         run: exit 1
 
-      - name: Terraform Apply
+      - name: Terraform Destroy
         if: github.ref == 'refs/heads/master' && github.event_name == 'push'
         run: terraform destroy -no-color -auto-approve -input=false
