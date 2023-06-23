@@ -13,7 +13,7 @@ on:
         required: true
 
 env:
-  TF_LOG: INFO
+  TF_LOG: ${{ vars.TF_LOG }}
   AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
   AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
 
