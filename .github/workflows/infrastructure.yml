@@ -71,13 +71,15 @@ jobs:
             #### Terraform Initialization: \`${{ steps.init.outcome }}\`
             #### Terraform Validation: \`${{ steps.validate.outcome }}\`
             #### Terraform Plan: \`${{ steps.plan.outcome }}\`
-            <details><summary>Show Plan</summary>
-            \`\`\`\n
-            ${process.env.PLAN}
+            <details>
+            <summary>Show Plan</summary>
 
+            \`\`\`hcl\n
+            ${process.env.PLAN}
             \`\`\`
             </details>
-            *Pushed by: @${{ github.actor }}, Action: \`${{ github.event_name }}\`*`;
+
+            *Pushed by: @${{ github.actor }}, Action: \`${{ github.event_name }}\`, Workflow: \`${{ github.workflow }}\`*`;
             github.rest.issues.createComment({
              issue_number: context.issue.number,
              owner: context.repo.owner,
