@@ -30,8 +30,9 @@ provider "aws" {
 
 # Load project wide configuration
 locals {
+  project_root       = dirname(abspath(path.root))
   availability_zones = coalesce(var.availability_zones, slice(data.aws_availability_zones.available.names, 0, var.availability_zones_amount))
-  configurations     = yamldecode(file(join("/", [path.root, "..", "configuration.yml"])))
+  configurations     = yamldecode(file(join("/", [local.project_root, "configuration.yml"])))
 }
 
 data "aws_caller_identity" "current" {}
