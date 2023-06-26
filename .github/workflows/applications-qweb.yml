@@ -1,0 +1,55 @@
+---
+
+name: "QWeb Application build and release"
+
+on:
+  push:
+    branches:
+      - master
+    paths:
+      - applications/qweb/**
+
+#  TODO: Add a testsuite to run on the pull request and include the lint check
+#  pull_request:
+#    branches:
+#      - master
+#    paths:
+#      - applications/qweb/**
+
+  workflow_dispatch:
+    branches:
+      - master
+
+env:
+  ENV: ${{ vars.ENV }}
+  AWS_DEFAULT_REGION: ${{ vars.AWS_DEFAULT_REGION }}
+
+jobs:
+  terraform:
+    name: "Infrastructure Deployment"
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash
+        working-directory: ./applications/qweb
+
+    steps:
+      - name: Checkout the repository to the runner
+        uses: actions/checkout@v3.5.3
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: $${{ vars.AWS_DEFAULT_REGION }}
+
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v1
+
+      - name: Build, and tag, and push the image to ECR
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+        run: |
+          make build tag push
