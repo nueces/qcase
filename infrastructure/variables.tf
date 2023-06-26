@@ -1,6 +1,7 @@
 #############################################################################
 # Variables
 #############################################################################
+
 variable "environment" {
   description = "Environment name"
   type        = string
@@ -76,5 +77,3 @@ variable "vpc_cidr_block" {
     error_message = "The VPC CIDR block provided in invalid."
   }
 }
-
-#############################################################################"

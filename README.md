@@ -62,6 +62,15 @@ make bootstrap
 ```
 
 ## Deploy infrastructure
+
+The infrastructure is organized in two directories:
+### organization
+Organization infrastructure resources. These resources are considered prerequisites for the current project.
+
+### infrastructure
+Project infrastructure resources.
+
+
 ```shell
 make deploy
 ```
@@ -144,6 +153,10 @@ Usage: make <target>  [one or more targets separated by spaces and in the order 
 
 
 ## TODO:
+
+Investigate how to reuse a GitHub workflows definition to reduce the code duplication.
+See: https://docs.github.com/en/actions/using-workflows/reusing-workflows
+
 
 ### Missing pieces:
 - EKS Cluster

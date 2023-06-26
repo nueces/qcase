@@ -1,6 +1,6 @@
 ---
 
-name: "Infrastructure Reclaim/Destroy"
+name: "Project Infrastructure Reclaim/Destroy"
 
 on:
   workflow_dispatch:

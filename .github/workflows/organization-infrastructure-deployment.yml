@@ -1,19 +1,19 @@
 ---
 
-name: "Infrastructure Deployment"
+name: "Organization Infrastructure Deployment"
 
 on:
   push:
     branches:
       - master
     paths:
-      - infrastructure/**
+      - organization/**
 
   pull_request:
     branches:
       - master
     paths:
-      - infrastructure/**
+      - organization/**
 
   workflow_dispatch:
     branches:
@@ -26,12 +26,12 @@ env:
 
 jobs:
   terraform:
-    name: "Infrastructure"
+    name: "Infrastructure Deployment"
     runs-on: ubuntu-latest
     defaults:
       run:
         shell: bash
-        working-directory: ./infrastructure
+        working-directory: ./organization
 
     steps:
       - name: Checkout the repository to the runner
