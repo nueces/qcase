@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Welcome to qweb!</title>
+<style>
+html { color-scheme: light dark; }
+body {
+    width: 35em;
+    margin: 0 auto;
+    font-family: Tahoma, Verdana, Arial, sans-serif;
+     /*  Try any other color like: blue, green, etc */
+    background-color: green;
+    }
+</style>
+</head>
+<body>
+<h1>Welcome to qweb!</h1>
+<p><em>Current date: {{ current_date }}.</em></p>
+<p> <h3>STS get_caller_identity response:</h3>
+    <pre>{{ response }}</pre>
+</p>
+</body>
+</html>
