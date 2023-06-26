@@ -6,7 +6,7 @@
 variable "projects" {
   description = "List of projects in the organization"
   type        = list(string)
-  default     = ["qcase"]
+  default     = ["qcase/qweb"]
 }
 
 variable "environments" {
