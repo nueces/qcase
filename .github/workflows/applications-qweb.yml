@@ -57,7 +57,7 @@ jobs:
           python3 -m venv venv
           ./venv/bin/pip install --requirement requirements.txt
 
-      - name: Build, and tag, and push the image to ECR
+      - name: Build, tag, and push the image to Amazon ECR
         working-directory: ./applications/qweb
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
