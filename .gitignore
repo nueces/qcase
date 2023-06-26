@@ -1,9 +1,16 @@
 .idea
 venv/
 logs/*
+#
 infrastructure/plan.out
 infrastructure/plan.cache
 infrastructure/plan.log
 infrastructure/*.tfstate
 infrastructure/.terraform/
-
+#
+organization/plan.out
+organization/plan.cache
+organization/plan.log
+organization/*.tfstate
+organization/.terraform/
+#
