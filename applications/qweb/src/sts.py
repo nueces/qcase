@@ -1,4 +1,8 @@
+import json
+
 import boto3
+from botocore.exceptions import ClientError
+from botocore.exceptions import BotoCoreError
 
 
 def get_caller_identity() -> dict:
@@ -9,7 +13,15 @@ def get_caller_identity() -> dict:
     during the app lifetime.
     """
     sts_client = boto3.client("sts")
-    return sts_client.get_caller_identity()
+    try:
+        response = sts_client.get_caller_identity()
+    except BotoCoreError as bex:
+        response = json.dumps({"BotoCoreError": str(bex)})
+    except ClientError as bex:
+        response = json.dumps({"ClientError": str(bex)})
+    except Exception as gex:
+        response = json.dumps({"Exception": str(gex)})
+    return response
 
 
 # HACK: A simple way to have a singleton on gunicorn
