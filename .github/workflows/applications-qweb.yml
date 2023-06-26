@@ -58,8 +58,35 @@ jobs:
           ./venv/bin/pip install --requirement requirements.txt
 
       - name: Build, tag, and push the image to Amazon ECR
+        id: publish
         working-directory: ./applications/qweb
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
         run: |
           make build tag push
+
+      - uses: actions/github-script@v6.4.1
+        id: comment
+        if: github.event_name == 'pull_request'
+        env:
+          OUTPUT: "${{ steps.publish.outputs.stdout }}"
+
+        with:
+          script: |
+            const output = `#### Publish outcome: \`${{ steps.publish.outcome }}\`
+            
+            <details>
+            <summary>Show build log</summary>
+
+            \`\`\`sh\n
+            ${process.env.OUTPUT}
+            \`\`\`
+            </details>
+
+            *Pushed by: @${{ github.actor }}, Action: \`${{ github.event_name }}\`, Workflow: \`${{ github.workflow }}\`*`;
+            github.rest.issues.createComment({
+             issue_number: context.issue.number,
+             owner: context.repo.owner,
+             repo: context.repo.repo,
+             body: output
+            })

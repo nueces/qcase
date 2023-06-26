@@ -2,6 +2,7 @@
 venv/
 logs/*
 applications/**/venv/
+**/__pycache__/**
 #
 infrastructure/plan.out
 infrastructure/plan.cache
