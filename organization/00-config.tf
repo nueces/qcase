@@ -10,7 +10,7 @@ terraform {
   #   using different tfstate files. And reading the bucket name from the configuration.yml file.
   backend "s3" {
     bucket = "887012142425-eu-central-1-terraform-backend-qcase"
-    key    = "qcase.tfstate"
+    key    = "organization.tfstate"
     region = "eu-central-1"
   }
 }
@@ -20,28 +20,18 @@ provider "aws" {
 
   default_tags {
     tags = {
-      Environment = var.environment
-      Owner       = "DevOps"
-      Project     = local.configurations.project_name
-      Terraform   = "true"
+      Owner     = "Org"
+      Terraform = "true"
     }
   }
 }
 
 # Load project wide configuration
 locals {
-  project_root       = dirname(abspath(path.root))
-  availability_zones = coalesce(var.availability_zones, slice(data.aws_availability_zones.available.names, 0, var.availability_zones_amount))
-  configurations     = yamldecode(file(join("/", [local.project_root, "configuration.yml"])))
+  project_root   = dirname(abspath(path.root))
+  configurations = yamldecode(file(join("/", [local.project_root, "configuration.yml"])))
 }
 
 data "aws_caller_identity" "current" {}
 
 data "aws_region" "current" {}
-
-data "aws_availability_zones" "available" {
-  filter {
-    name   = "opt-in-status"
-    values = ["opt-in-not-required"]
-  }
-}
