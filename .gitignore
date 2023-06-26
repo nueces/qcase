@@ -1,6 +1,7 @@
 .idea
 venv/
 logs/*
+applications/**/venv/
 #
 infrastructure/plan.out
 infrastructure/plan.cache

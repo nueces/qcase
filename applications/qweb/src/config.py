@@ -1,4 +1,7 @@
-# Gunicorn config variables
+"""
+Gunicorn config variables
+"""
+
 loglevel = "info"
 # Don't write any file, just drop everything to the standard outputs
 errorlog = "-"  # stderr
