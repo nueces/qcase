@@ -51,7 +51,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v4.6.1
         with:
-          python-version: 3.10
+          python-version: 3.10.12
       - name: Create virtualenv and install project dependencies
         run: |
           python3 -m venv venv
