@@ -12,6 +12,7 @@ module "ecr" {
   repository_name = each.key
 
   repository_read_write_access_arns = [data.aws_caller_identity.current.arn]
+  repository_image_tag_mutability   = "MUTABLE"
   create_lifecycle_policy           = true
   # See:
   #   - https://docs.aws.amazon.com/AmazonECR/latest/userguide/LifecyclePolicies.html#lifecycle_policy_parameters
