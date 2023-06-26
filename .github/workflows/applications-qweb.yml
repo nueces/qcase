@@ -26,7 +26,7 @@ env:
 
 jobs:
   terraform:
-    name: "Infrastructure Deployment"
+    name: "Image Building"
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -47,6 +47,15 @@ jobs:
       - name: Login to Amazon ECR
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v1.6.1
+
+      - name: Set up Python
+        uses: actions/setup-python@v4.6.1
+        with:
+          python-version: 3.10
+      - name: Create virtualenv and install project dependencies
+        run: |
+          python3 -m venv venv
+          ./venv/bin/pip install --requirement requirements.txt
 
       - name: Build, and tag, and push the image to ECR
         env:
