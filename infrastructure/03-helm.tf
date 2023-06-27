@@ -13,7 +13,7 @@ data "aws_ecr_repository" "qweb" {
 
 data "aws_ecr_image" "qweb" {
   repository_name = "${local.configurations.project_name}/qweb-${var.environment}"
-  image_tag       = "latest"
+  image_tag       = var.helm_deployment_tag
 }
 
 # TODO: Use an object map to declare the charts to be deployed and implement a for_each to replace hardcoded values.
