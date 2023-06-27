@@ -105,6 +105,6 @@ lint: python-lint yaml-lint terraform-lint ##@ Run linting tools for Python and 
 	$(info Lint done!)
 
 .PHONY: kubeconfig
-kubeconfig: ##@
+kubeconfig: ##@ Generate a local kubectl configuration file to connect to the k8s cluster.
 	$(info Saving kubeconfig into the project directory)
 	aws eks --region eu-central-1 update-kubeconfig --name ${PROJECT_NAME} --kubeconfig $(CURDIR)/kubeconfig
