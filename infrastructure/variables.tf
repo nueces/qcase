@@ -77,3 +77,65 @@ variable "vpc_cidr_block" {
     error_message = "The VPC CIDR block provided in invalid."
   }
 }
+
+#############################################################################
+# EKS
+#############################################################################
+
+variable "eks_cluster_version" {
+  description = "Kubernetes version to use"
+  type        = string
+  default     = "1.27"
+}
+
+variable "eks_key_name" {
+  description = "The key name that should be used for the instances"
+  type        = string
+  default     = null
+}
+
+
+variable "eks_managed_node_group_defaults" {
+  description = "Default configuration for the managed node groups"
+  type = object({
+    ami_type : string
+    capacity_type : string
+    instance_types : list(string)
+    min_size : number
+    max_size : number
+    desired_size : number
+  })
+  default = {
+    ami_type       = "AL2_x86_64"
+    capacity_type  = "SPOT"
+    instance_types = ["t3.micro"]
+    min_size       = 1
+    max_size       = 1
+    desired_size   = 1
+  }
+}
+
+# TODO, this should be a list or map of objects to keep all the apps configurations in a single variable.
+variable "eks_managed_node_groups" {
+  description = "Configurations per application to be deployed in the eks_managed_node_groups for the EKS cluster."
+  type = object({
+    name : string
+    description : string
+    capacity_type : string
+    instance_types : list(string)
+    min_size : number
+    max_size : number
+    desired_size : number
+    max_unavailable_percentage : number
+  })
+  default = {
+    name                       = "qweb"
+    description                = "qweb nodes"
+    capacity_type              = "SPOT"
+    instance_types             = ["t3.micro", "t3.small"]
+    min_size                   = 1
+    max_size                   = 6
+    desired_size               = 3
+    max_unavailable_percentage = 50
+  }
+}
