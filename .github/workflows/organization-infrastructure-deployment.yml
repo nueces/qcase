@@ -19,6 +19,15 @@ on:
     branches:
       - master
 
+  # This workflow would run if a new version of the QWeb app was built
+  workflow_run:
+    workflows:
+      - "QWeb Application build and release"
+    types:
+     - completed
+    branches:
+      - master
+
 env:
   TF_LOG: ${{ vars.TF_LOG }}
   AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}

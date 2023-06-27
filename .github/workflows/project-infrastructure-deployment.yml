@@ -26,7 +26,7 @@ env:
 
 jobs:
   terraform:
-    name: "Infrastructure Deployment"
+    name: "Project Infrastructure Deployment"
     runs-on: ubuntu-latest
     defaults:
       run:
