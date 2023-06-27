@@ -37,16 +37,17 @@ Additionally other directories are created during the bootstrap process:
 The `configuration.yml` file contains a set of values that can be used to configure the `bootstrap` and `deployment` process.
 
 ```yaml
+---
 # The idea of this configuration file is to be a single source of truth for the bootstrap scripts and terraform.
 project_name: qcase
 aws_region: eu-central-1
 logs_directory: logs
-key_name: qcase
+vault_directory: vault  # Be sure that this path is present in the .gitignore file.
+key_name: qcase  # Keypair to be used in worker nodes instances.
 
 # the bucket_suffix_name is prefixed with the account_id and region to create the bucket name
 # ex: 123456789012-eu-central-1-terraform-backend-project_name
 terraform:
-  state_name: dev
   bucket_suffix_name: terraform-backend-qcase
 ```
 
@@ -67,6 +68,9 @@ AWS Configured credentials.
 
 The bootstrap target creates a set following set of resources:
  - A s3 bucket to be used as a backend storage for terraform state files.
+ - A keypair that would be stored in the configured `vault_directory`. This keypair is created in this stage,
+   because using terraform instead, would end with the cryptographical material being stored in the tfstate file.
+
 
 To run the process just execute:
 ```shell
