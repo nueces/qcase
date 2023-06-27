@@ -289,7 +289,7 @@ kubectl get svc --namespace default qweb --template "{{ range (index .status.loa
 
 Change the background color of the QWeb app to trigger a new deployment
 ```shell
-export BGCOLOR="yellow" sed -i -E "s/(background-color:\ )(.*)/\1$BGCOLOR;/" applications/qweb/src/index.html
+export BGCOLOR="yellow" && sed -i -E "s/(background-color:\ )(.*)/\1$BGCOLOR;/" applications/qweb/src/index.html
 ```
 ## TODO:
 
