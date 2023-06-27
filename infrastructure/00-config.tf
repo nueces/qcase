@@ -69,10 +69,9 @@ data "aws_eks_cluster_auth" "cluster" {
 ##
 
 locals {
-  project_root       = dirname(abspath(path.root))
-  project_charts     = join("/", [local.project_root, "charts"])
+  project_charts     = join("/", [path.root, "..", "charts"])
   availability_zones = coalesce(var.availability_zones, slice(data.aws_availability_zones.available.names, 0, var.availability_zones_amount))
-  configurations     = yamldecode(file(join("/", [local.project_root, "configuration.yml"])))
+  configurations     = yamldecode(file(join("/", [path.root, "..", "configuration.yml"])))
 }
 
 #############################################################################
