@@ -1,9 +1,12 @@
+#############################################################################
+## Kubernetes Cluster
+##
 
 module "eks" {
   source  = "terraform-aws-modules/eks/aws"
   version = "19.15.3"
 
-  cluster_name    = local.configurations.project_name
+  cluster_name    = local.project_name
   cluster_version = var.eks_cluster_version
 
   vpc_id                         = module.vpc.vpc_id

@@ -25,7 +25,7 @@ provider "aws" {
     tags = {
       Environment = var.environment
       Owner       = "DevOps"
-      Project     = local.configurations.project_name
+      Project     = local.project_name
       Terraform   = "true"
     }
   }
@@ -69,9 +69,10 @@ data "aws_eks_cluster_auth" "cluster" {
 ##
 
 locals {
-  project_charts     = join("/", [path.root, "..", "charts"])
   availability_zones = coalesce(var.availability_zones, slice(data.aws_availability_zones.available.names, 0, var.availability_zones_amount))
   configurations     = yamldecode(file(join("/", [path.root, "..", "configuration.yml"])))
+  project_name       = local.configurations.project_name
+  project_charts     = join("/", [path.root, "..", "charts"])
 }
 
 #############################################################################
