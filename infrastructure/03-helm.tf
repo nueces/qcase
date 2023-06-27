@@ -3,10 +3,17 @@
 ##
 locals {
   replica_count = length(local.availability_zones)
+  commit_tag    = one([for tag in data.aws_ecr_image.qweb.image_tags : tag if can(regex("^[a-z0-9]{8}$", tag))])
+
 }
 
 data "aws_ecr_repository" "qweb" {
   name = "${local.configurations.project_name}/qweb-${var.environment}"
+}
+
+data "aws_ecr_image" "qweb" {
+  repository_name = "${local.configurations.project_name}/qweb-${var.environment}"
+  image_tag       = "latest"
 }
 
 # TODO: Use an object map to declare the charts to be deployed and implement a for_each to replace hardcoded values.
@@ -32,7 +39,7 @@ resource "helm_release" "qweb" {
 
   set {
     name  = "image.tag"
-    value = "latest"
+    value = local.commit_tag
   }
 
   set {
