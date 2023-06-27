@@ -3,10 +3,10 @@
 project_name: qcase
 aws_region: eu-central-1
 logs_directory: logs
-key_name: qcase
+vault_directory: vault  # Be sure that this path is present in the .gitignore file.
+key_name: qcase  # Keypair to be used in worker nodes instances.
 
 # the bucket_suffix_name is prefixed with the account_id and region to create the bucket name
 # ex: 123456789012-eu-central-1-terraform-backend-project_name
 terraform:
-  state_name: dev
   bucket_suffix_name: terraform-backend-qcase
