@@ -25,8 +25,16 @@ BLACK    = ${VENV_PATH}/bin/black
 ISORT    = ${VENV_PATH}/bin/isort
 PYLINT   = ${VENV_PATH}/bin/pylint
 YAMLLINT = ${VENV_PATH}/bin/yamllint -c .yamllint.yml
+YQ_GET   = ${VENV_PATH}/bin/yq < ${PROJECT_CONFIGURATION} -r
 
 #############################################################################
+
+ifndef AWS_DEFAULT_REGION
+	AWS_DEFAULT_REGION = $(shell ${YQ_GET} .aws_region)
+endif
+
+PROJECT_NAME   = $(shell ${YQ_GET} .project_name)
+
 
 .PHONY: help
 help: ##@ Show this help.
@@ -95,3 +103,8 @@ yaml-lint: ##@ Run linting tools for yaml code in the .github directory and the 
 .PHONY: lint
 lint: python-lint yaml-lint terraform-lint ##@ Run linting tools for Python and Terraform code.
 	$(info Lint done!)
+
+.PHONY: kubeconfig
+kubeconfig: ##@
+	$(info Saving kubeconfig into the project directory)
+	aws eks --region eu-central-1 update-kubeconfig --name ${PROJECT_NAME} --kubeconfig $(CURDIR)/kubeconfig

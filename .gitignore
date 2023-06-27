@@ -16,3 +16,4 @@ organization/plan.log
 organization/*.tfstate
 organization/.terraform/
 #
+kubeconfig
