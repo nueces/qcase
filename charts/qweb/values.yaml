@@ -4,8 +4,9 @@
 
 replicaCount: 1
 
+# The image here is just a placeholder, the one deployed is set via terraform
 image:
-  repository: nginx
+  repository: public.ecr.aws/nginx/nginx
   pullPolicy: IfNotPresent
   # Overrides the image tag whose default is the chart appVersion.
   tag: ""
@@ -37,24 +38,22 @@ securityContext: {}
   # runAsUser: 1000
 
 service:
-  type: ClusterIP
+  type: LoadBalancer
   port: 80
 
+# Configure the aws lb ingress controller
 ingress:
-  enabled: false
-  className: ""
-  annotations: {}
-    # kubernetes.io/ingress.class: nginx
-    # kubernetes.io/tls-acme: "true"
+  enabled: true
+  className: alb
+  annotations:
+      kubernetes.io/ingress.class: alb
+      alb.ingress.kubernetes.io/scheme: internet-facing
+      alb.ingress.kubernetes.io/target-type: ip
   hosts:
-    - host: chart-example.local
+    host:
       paths:
         - path: /
-          pathType: ImplementationSpecific
-  tls: []
-  #  - secretName: chart-example-tls
-  #    hosts:
-  #      - chart-example.local
+          pathType: Prefix
 
 resources: {}
   # We usually recommend not to specify default resources and to leave this as a conscious
