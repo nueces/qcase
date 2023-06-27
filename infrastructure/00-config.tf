@@ -15,6 +15,9 @@ terraform {
   }
 }
 
+#############################################################################
+## Providers configuration
+##
 provider "aws" {
   region = var.aws_region
 
@@ -28,12 +31,17 @@ provider "aws" {
   }
 }
 
-# Load project wide configuration
-locals {
-  project_root       = dirname(abspath(path.root))
-  availability_zones = coalesce(var.availability_zones, slice(data.aws_availability_zones.available.names, 0, var.availability_zones_amount))
-  configurations     = yamldecode(file(join("/", [local.project_root, "configuration.yml"])))
+provider "helm" {
+  kubernetes {
+    host                   = data.aws_eks_cluster.cluster.endpoint
+    cluster_ca_certificate = base64decode(data.aws_eks_cluster.cluster.certificate_authority.0.data)
+    token                  = data.aws_eks_cluster_auth.cluster.token
+  }
 }
+
+#############################################################################
+## Data resources
+##
 
 data "aws_caller_identity" "current" {}
 
@@ -45,3 +53,26 @@ data "aws_availability_zones" "available" {
     values = ["opt-in-not-required"]
   }
 }
+
+data "aws_eks_cluster" "cluster" {
+  name       = module.eks.cluster_name
+  depends_on = [module.eks.cluster_name]
+}
+
+data "aws_eks_cluster_auth" "cluster" {
+  name       = module.eks.cluster_name
+  depends_on = [module.eks.cluster_name]
+}
+
+#############################################################################
+## locals and project wide configuration
+##
+
+locals {
+  project_root       = dirname(abspath(path.root))
+  project_charts     = join("/", [local.project_root, "charts"])
+  availability_zones = coalesce(var.availability_zones, slice(data.aws_availability_zones.available.names, 0, var.availability_zones_amount))
+  configurations     = yamldecode(file(join("/", [local.project_root, "configuration.yml"])))
+}
+
+#############################################################################
