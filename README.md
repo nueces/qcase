@@ -298,6 +298,10 @@ See: https://docs.github.com/en/actions/using-workflows/reusing-workflows
 
 - Modify the terraform backend configurations to remove the hardcoded values and provided that values via cli arguments 
 
+## FIXME:
+
+- The `applications-qweb` workflow does not post the log into the pr.
+
 
 ### Missing pieces:
 - LB configuration.
