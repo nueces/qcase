@@ -7,6 +7,10 @@
 - Deploy a simple web application.
 - Configure a Load balancer and a deployment policy.
 
+## Repository:
+
+GitHub: https://github.com/nueces/qcase/
+ 
 
 ## Project organization overview
 
