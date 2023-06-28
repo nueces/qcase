@@ -62,7 +62,7 @@ Software:
 - GNU make
 
 
-AWS Configured credentials.
+AWS Configured credentials for GitHub Actions. See **Secrets and variables** in the CI/CD section.
 
 
 ## Bootstrap
@@ -133,7 +133,7 @@ Inside the directory `infratructure` directory there are two subdirectories.
    that like IAM roles and policies.
 
 
-## Makefile
+#### Makefile
 Each directory that contains terraform files has a Makefile with a set of specific targets to use during the development
 phase.
 
@@ -318,6 +318,22 @@ Each time that there is a new application release the workflow `QWeb Application
 execution of the workflow "" 
 
 
+### Secrets and variables
+
+The following list of secrets and variables needs to be created via the GitHub UI.
+
+#### Secrets
+
+- `AWS_ACCESS_KEY_ID`: An AWS access key associated with an IAM account.
+- `AWS_SECRET_ACCESS_KEY`: The secret key associated with the access key.
+
+#### Variables
+
+- `AWS_ACCOUNT_ID`: AWS account id.
+- `AWS_DEFAULT_REGION`: The Default AWS Region to use.
+- `ENV`: Environment or Stage. e.g.: `dev`, `stg`, `prd`.
+
+
 ## Handy commands
 
 Obtain the application url: 
@@ -386,7 +402,9 @@ Press CTRL+C to quit
 
 ## TODO:
 
-- Merge the Reclaim/Destroy workflows into a single one.
+- Creating reusable workflows.
+ - Merge resource creation workflows in a single Workflow to control the execution order.
+ - Merge the Reclaim/Destroy workflows into a single one.
 
 
 ### Things than can be improved:
@@ -398,7 +416,7 @@ Press CTRL+C to quit
 
 #### Workflows:
 
-- Investigate how to reuse a GitHub workflows definition to reduce the code duplication.
+- Investigate how to reuse a GitHub workflows definition to reduce the code duplication. And 
   See: https://docs.github.com/en/actions/using-workflows/reusing-workflows
 
 #### At Bootstrap:
