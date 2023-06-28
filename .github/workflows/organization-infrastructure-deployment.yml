@@ -28,7 +28,7 @@ env:
 
 jobs:
   terraform:
-    name: "Infrastructure Deployment"
+    name: "Organization Infrastructure Deployment"
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -53,7 +53,7 @@ jobs:
       - name: Terraform init
         id: init
         run: |
-          terraform init -lockfile=readonly
+          terraform init -lockfile=readonly \
             -backend-config="bucket=${{ env.TF_BUCKET }}" \
             -backend-config="key=${{ env.TF_KEY }}" \
             -backend-config="region=${{ vars.AWS_DEFAULT_REGION }}"

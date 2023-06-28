@@ -62,7 +62,7 @@ jobs:
       - name: Terraform init
         id: init
         run: |
-          terraform init -lockfile=readonly
+          terraform init -lockfile=readonly \
             -backend-config="bucket=${{ env.TF_BUCKET }}" \
             -backend-config="key=${{ env.TF_KEY }}" \
             -backend-config="region=${{ vars.AWS_DEFAULT_REGION }}"

@@ -21,7 +21,7 @@ env:
 
 jobs:
   terraform:
-    name: "Infrastructure Destroy"
+    name: "Organization Infrastructure Destroy"
     if: ${{ inputs.confirm_destroy_repository_name == github.event.repository.name }}
     runs-on: ubuntu-latest
     defaults:
@@ -47,7 +47,7 @@ jobs:
       - name: Terraform init
         id: init
         run: |
-          terraform init -lockfile=readonly
+          terraform init -lockfile=readonly \
             -backend-config="bucket=${{ env.TF_BUCKET }}" \
             -backend-config="key=${{ env.TF_KEY }}" \
             -backend-config="region=${{ vars.AWS_DEFAULT_REGION }}"
