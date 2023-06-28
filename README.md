@@ -34,7 +34,8 @@ Additionally other directories are created during the bootstrap process:
 
 ## Project configuration
 
-The `configuration.yml` file contains a set of values that can be used to configure the `bootstrap` and `deployment` process.
+The `configuration.yml` file contains a set of values that can be used to configure the `bootstrap` and `deployment`
+process.
 
 ```yaml
 ---
@@ -119,14 +120,15 @@ Usage: make <target>  [one or more targets separated by spaces and in the order 
 
 ### Organization Infrastructure / Terraform
 
-Inside the directory `organization` are the set of resources definitions that are typically built as pre-requisite for a specific project.
+Inside the directory `organization` are the set of resources definitions that are typically built as pre-requisite for a
+specific project.
 In a real-life scenario these resources are managed in a separated repository.
 
 
 ### Project Infrastructure / Terraform
 
-Inside the directory `infratructure` directory there are a set of specific make targets to use during the development phase. 
-
+Inside the directory `infratructure` directory there are a set of specific make targets to use during the development 
+phase.
 ```shell
 make
 
@@ -198,7 +200,8 @@ Usage: make <target>  [one or more targets separated by spaces and in the order 
 
 ```
 
-The application makes a query to the AWS  STS api to obtain the IAM user or role whose credentials are used to call the operation.
+The application makes a query to the AWS  STS api to obtain the IAM user or role whose credentials are used to call the
+operation.
 
 ```json
 {
@@ -219,15 +222,15 @@ The application makes a query to the AWS  STS api to obtain the IAM user or role
 }
 ```
 
-In addition to this, you can change the background color of the page by editing the `src/index.html` file. If the change is pushed
-to the repository this would trigger a new image build and a subsequent deployment.
+In addition to this, you can change the background color of the page by editing the `src/index.html` file. If the change
+is pushed to the repository this would trigger a new image build and a subsequent deployment.
 
 
 ### Helm charts
 
-For deployment the application into the kubernetes cluster we are using Helm charts. The idea is to declare the resources  
-to be deployed using the best tool for that avoiding creating complex definition on terraform/hcl and allowing a better
-jobs division between different teams.
+For deployment the application into the kubernetes cluster we are using Helm charts. The idea is to declare the   
+resources to be deployed using the best tool for that avoiding creating complex definition on terraform/hcl and 
+allowing a better jobs division between different teams.
 
 Helm charts for the qweb application are stored inside the directory `charts/qweb`.
 
@@ -288,34 +291,118 @@ execution of the workflow ""
 
 Get the app url: 
 ```shell
-kubectl get svc --namespace default qweb --template "{{ range (index .status.loadBalancer.ingress 0) }}{{.}}{{ end }}"
+kubectl get ingress qweb --template "http://{{ range (index .status.loadBalancer.ingress 0) }}{{.}}{{ end }}"
 ```
 
 Change the background color of the QWeb app to trigger a new deployment
 ```shell
-export BGCOLOR="yellow" && sed -i -E "s/(background-color:\ )(.*)/\1$BGCOLOR;/" applications/qweb/src/index.html
+export BG_COLOR="red" && sed -i -E "s/(background-color:\ )(.*)/\1$BG_COLOR;/" applications/qweb/src/index.html
 ```
+
+Render Helm chart for debugging
+```shell
+helm template --debug charts/qweb > debug.yml
+```
+
+Run the application locally with docker
+```shell
+docker run -it --rm --name qweb -v ~/.aws:/root/.aws -p 127.0.0.1:8000:80 <account_id>.dkr.ecr.<region>.amazonaws.com/qcase/qweb-dev:latest
+```
+access the application using the url `http://127.0.0.1:8000/`
+
+
+Run the web application manually:
+```shell
+python applications/qweb/src/app.py
+```
+
+output:
+```shell
+ * Serving Flask app 'qweb'
+ * Debug mode: on
+WARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:8000
+Press CTRL+C to quit
+ * Restarting with stat
+ * Debugger is active!
+ * Debugger PIN: 123-456-789
+```
+
+
 ## TODO:
 
-Investigate how to reuse a GitHub workflows definition to reduce the code duplication.
-See: https://docs.github.com/en/actions/using-workflows/reusing-workflows
+- Modify the terraform backend configurations to remove the hardcoded values and provided that values via cli arguments
 
-- Modify the terraform backend configurations to remove the hardcoded values and provided that values via cli arguments 
-
-## FIXME:
-
+### Know issues.
 - The `applications-qweb` workflow does not post the log into the pr.
+
+- In some circumstances terraform kubernetes provider fails to be set.
+  See: https://registry.terraform.io/providers/hashicorp/kubernetes/latest/docs#stacking-with-managed-kubernetes-cluster-resources
+
+  *Workaround:* create a kubeconfig file and export the environment variable pointing to it.
+  ```shell
+  make kubeconfig
+  export KUBE_CONFIG_PATH=$(realpath kubeconfig)
+  ```
+
+  A recommended approach for this issue is to manage terraform definition for the EKS cluster and kubernetes
+  resources in two different stacks.
+  See: https://github.com/hashicorp/terraform-provider-kubernetes/blob/main/_examples/eks/README.md
+
+- Terraform do not allways detect changes in the Helm charts, and for that reason the plan shows no changes.
+  *Workaround:* publish a new image
+  ```shell
+   make -C applications/qweb/ publish
+  ```
+
+- Terraform fails to apply helm_release.qweb in some occasions.
+  *Workaround:* publish a new image
+  ```shell
+   helm upgrade qweb charts/qweb
+  ```
+  This would deploy the nginx image, and then terraform would detect the drift and would apply the changes in the next
+  apply.
 
 
 ### Missing pieces:
-- LB configuration.
+
 - Improve deployment configuration using the helm charts.
+- Merge the Reclaim/Destroy workflows into one.
+- manage terraform definition for the EKS cluster and kubernetes resources in two different stacks.
 
 
 ### Can be improved:
 
+#### Terraform
+
+- EKS resource tagging
+
+
+#### Workflows:
+
+- Investigate how to reuse a GitHub workflows definition to reduce the code duplication.
+  See: https://docs.github.com/en/actions/using-workflows/reusing-workflows
 
 #### At Bootstrap:
+
 - Add a method to remove the s3 bucket when terraform resources are destroyed.
-- Create a key pair for the instance nodes to be created if not exist. 
 - Set this step as part of the CI/CD, to create these resources in the first run/commit.
+
+
+### References:
+
+Some documents used as references.
+
+## ALB docs:
+
+https://docs.aws.amazon.com/eks/latest/userguide/alb-ingress.html
+https://docs.aws.amazon.com/eks/latest/userguide/aws-load-balancer-controller.html
+
+## Ingress annotations
+
+https://kubernetes-sigs.github.io/aws-load-balancer-controller/v2.5/guide/ingress/annotations/
+
+## Helm debugging.
+
+https://helm.sh/docs/chart_template_guide/debugging/
