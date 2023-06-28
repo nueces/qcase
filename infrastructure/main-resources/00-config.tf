@@ -6,7 +6,7 @@ terraform {
     }
   }
 
-# Configuration values are set via command line options
+  # Configuration values are set via command line options
   backend "s3" {
   }
 }
