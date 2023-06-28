@@ -1,19 +1,21 @@
 ---
 
-name: "Project Infrastructure Deployment"
+name: "Kubernetes resources Deployment"
 
 on:
   push:
     branches:
       - master
     paths:
-      - infrastructure/main-resources/**
+      - charts/**
+      - infrastructure/kubernetes-resources/**
 
   pull_request:
     branches:
       - master
     paths:
-      - infrastructure/main-resources/**
+      - charts/**
+      - infrastructure/kubernetes-resources/**
 
   workflow_dispatch:
     branches:
@@ -23,6 +25,7 @@ on:
   workflow_run:
     workflows:
       - "QWeb Application build and release"
+      - "Project Infrastructure Deployment"
     types:
      - completed
     branches:
@@ -40,7 +43,7 @@ jobs:
     defaults:
       run:
         shell: bash
-        working-directory: ./infrastructure/main-resources
+        working-directory: ./infrastructure/kubernetes-resources
 
     steps:
       - name: Checkout the repository to the runner

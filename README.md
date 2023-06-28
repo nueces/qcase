@@ -245,28 +245,52 @@ When the workflows are triggerd by a pull request, the result of each execution 
 request including the build logs or the terraform plan depending on the case. In and GitHub Organization account the
 branch protection rules can be configured to use the execution result to prevent the pull request to be merged.
 
-There are three set of workflows, they are:
+There are four set of workflows, they are:
 - Organization Infrastructure
 - Project Infrastructure
-- Application release
+- Kubernetes Resources
+- Application Release
 
 
 #### Organization Infrastructure
 
-Creates or Reclaim organizational resources.
+These workflow creates or reclaim organizational resources. e.g.: ECR repositories.
 
 Workflows definitions:
- - *Organization Infrastructure Deployment* [organization-infrastructure-deployment.yml](.github/workflows/organization-infrastructure-deployment.yml)
- - *Organization Infrastructure Reclaim/Destroy* [organization-infrastructure-destroy.yml](.github/workflows/organization-infrastructure-destroy.yml)
+
+ - *Organization Infrastructure Deployment* 
+    [organization-infrastructure-deployment.yml](.github/workflows/organization-infrastructure-deployment.yml)
+
+ - *Organization Infrastructure Reclaim/Destroy*
+    [organization-infrastructure-destroy.yml](.github/workflows/organization-infrastructure-destroy.yml)
+
 
 #### Project Infrastructure
 
-Create or Reclaim the cluster resources
-Deploy new application releases.
+These workflows create or reclaim the projects resources. e.g.: VPC, EKS Cluster, etc. 
 
 Workflows definitions:
- - *Project Infrastructure Deployment* [project-infrastructure-deployment.yml](.github/workflows/project-infrastructure-deployment.yml)
- - *Project Infrastructure Reclaim/Destroy* [project-infrastructure-destroy.yml](.github/workflows/project-infrastructure-destroy.yml)
+
+ - *Project Infrastructure Deployment* 
+   [project-infrastructure-deployment.yml](.github/workflows/project-infrastructure-deployment.yml)
+ 
+ - *Project Infrastructure Reclaim/Destroy* 
+   [project-infrastructure-destroy.yml](.github/workflows/project-infrastructure-destroy.yml)
+
+
+#### Kubernetes Resources
+
+These workflows create or remove the kubernetes resources that are deployed into the EKS cluster.
+Some of these resources are the Helm chart used to deploy the application. 
+
+Workflows definitions:
+
+ - *Kubernetes resources Deployment* 
+   [project-infrastructure-deployment.yml](.github/workflows/project-infrastructure-deployment.yml)
+ 
+ - *Kubernetes resources removal* 
+   [project-infrastructure-destroy.yml](.github/workflows/project-infrastructure-destroy.yml)
+
 
 #### Application release
 
@@ -289,24 +313,35 @@ execution of the workflow ""
 
 ## Handy commands
 
-Get the app url: 
+Obtain the application url: 
 ```shell
-kubectl get ingress qweb --template "http://{{ range (index .status.loadBalancer.ingress 0) }}{{.}}{{ end }}"
+kubectl get ingress qweb \
+  --template "http://{{ range (index .status.loadBalancer.ingress 0) }}{{.}}{{ end }}"
 ```
+example output
+```shell
+http://k8s-default-qweb-dad93923ee-32077523.eu-central-1.elb.amazonaws.com
+```
+
 
 Change the background color of the QWeb app to trigger a new deployment
 ```shell
-export BG_COLOR="red" && sed -i -E "s/(background-color:\ )(.*)/\1$BG_COLOR;/" applications/qweb/src/index.html
+export BG_COLOR="red" && \
+  sed -i -E "s/(background-color:\ )(.*)/\1$BG_COLOR;/" applications/qweb/src/index.html && \
+  grep background-color applications/qweb/src/index.html
 ```
+
 
 Render Helm chart for debugging
 ```shell
 helm template --debug charts/qweb > debug.yml
 ```
 
+
 Run the application locally with docker
 ```shell
-docker run -it --rm --name qweb -v ~/.aws:/root/.aws -p 127.0.0.1:8000:80 <account_id>.dkr.ecr.<region>.amazonaws.com/qcase/qweb-dev:latest
+docker run -it --rm --name qweb -v ~/.aws:/root/.aws -p 127.0.0.1:8000:80 \
+  <account_id>.dkr.ecr.<region>.amazonaws.com/qcase/qweb-dev:latest
 ```
 access the application using the url `http://127.0.0.1:8000/`
 
@@ -316,7 +351,7 @@ Run the web application manually:
 python applications/qweb/src/app.py
 ```
 
-output:
+example output:
 ```shell
  * Serving Flask app 'qweb'
  * Debug mode: on
@@ -330,53 +365,31 @@ Press CTRL+C to quit
 ```
 
 
-## TODO:
-
-- Modify the terraform backend configurations to remove the hardcoded values and provided that values via cli arguments
 
 ### Know issues.
+
 - The `applications-qweb` workflow does not post the log into the pr.
-
-- In some circumstances terraform kubernetes provider fails to be set.
-  See: https://registry.terraform.io/providers/hashicorp/kubernetes/latest/docs#stacking-with-managed-kubernetes-cluster-resources
-
-  *Workaround:* create a kubeconfig file and export the environment variable pointing to it.
-  ```shell
-  make kubeconfig
-  export KUBE_CONFIG_PATH=$(realpath kubeconfig)
-  ```
-
-  A recommended approach for this issue is to manage terraform definition for the EKS cluster and kubernetes
-  resources in two different stacks.
-  See: https://github.com/hashicorp/terraform-provider-kubernetes/blob/main/_examples/eks/README.md
 
 - Terraform do not allways detect changes in the Helm charts, and for that reason the plan shows no changes.
   *Workaround:* publish a new image
   ```shell
    make -C applications/qweb/ publish
   ```
+  
 
-- Terraform fails to apply helm_release.qweb in some occasions.
-  *Workaround:* publish a new image
-  ```shell
-   helm upgrade qweb charts/qweb
-  ```
-  This would deploy the nginx image, and then terraform would detect the drift and would apply the changes in the next
-  apply.
+## TODO:
 
-
-### Missing pieces:
-
-- Improve deployment configuration using the helm charts.
+- Investigate how to reuse a GitHub workflows definition to reduce the code duplication.
+  See: https://docs.github.com/en/actions/using-workflows/reusing-workflows
+- Modify the terraform backend configurations to remove the hardcoded values and provided that values via cli arguments 
 - Merge the Reclaim/Destroy workflows into one.
-- manage terraform definition for the EKS cluster and kubernetes resources in two different stacks.
 
 
-### Can be improved:
+### Things than can be improved:
 
 #### Terraform
 
-- EKS resource tagging
+- EKS resource tagging and mapping
 
 
 #### Workflows:
@@ -390,19 +403,19 @@ Press CTRL+C to quit
 - Set this step as part of the CI/CD, to create these resources in the first run/commit.
 
 
-### References:
+## References:
 
 Some documents used as references.
 
-## ALB docs:
+#### ALB docs:
 
 https://docs.aws.amazon.com/eks/latest/userguide/alb-ingress.html
 https://docs.aws.amazon.com/eks/latest/userguide/aws-load-balancer-controller.html
 
-## Ingress annotations
+#### Ingress annotations
 
 https://kubernetes-sigs.github.io/aws-load-balancer-controller/v2.5/guide/ingress/annotations/
 
-## Helm debugging.
+#### Helm debugging.
 
 https://helm.sh/docs/chart_template_guide/debugging/
