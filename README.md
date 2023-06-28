@@ -127,8 +127,14 @@ In a real-life scenario these resources are managed in a separated repository.
 
 ### Project Infrastructure / Terraform
 
-Inside the directory `infratructure` directory there are a set of specific make targets to use during the development 
-phase.
+Inside the directory `infratructure` directory there are two subdirectories.
+- `main-resources` for deploying projects resources like VPC, EKS cluster, etc.
+- `kubernets-resources` for deploying Kubernetes resources, like Helm chars, controllers, and AWS resources needed for
+   that like IAM roles and policies.
+
+
+Each subdirectory contains a Makefile with a set of specific targets to use during the development phase.
+
 ```shell
 make
 
