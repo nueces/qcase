@@ -1,9 +1,41 @@
 # Infrastructure
 
-Inside this directory are the terraform files needed to build the infrastructure and deploy the application.
+Inside this directory are two subdirectories that contains terraform files needed to build the infrastructure and deploy the application.
+
+#### subdirectories:
+
+- main-resources: Contains the VPC, EKS Cluster, and in general should contain the definition for any other AWS resource.
+- kubernetes-resources: Contains the Kubernetes resources, that are provisioned in the EKS cluster, and any other AWS 
+  resources needed for that, like IAM roles, etc.
+
+
+#### Why?
+
+During the installation of the AWS lb controller, if faced some of the following issues, and after exploring some 
+options I decided to refactor the previous approach of a single project infrastructure folder into the current solution.
+
+Issues
+
+- In some circumstances terraform kubernetes provider fails to be set.
+  See: https://registry.terraform.io/providers/hashicorp/kubernetes/latest/docs#stacking-with-managed-kubernetes-cluster-resources
+
+  *Workaround:* create a kubeconfig file and export the environment variable pointing to it.
+  ```shell
+  make kubeconfig
+  export KUBE_CONFIG_PATH=$(realpath kubeconfig)
+  ```
+  Even when this workaround could work in some situations, it does not in the initial setup, where the cluster does not
+  exist and because of that is impossible to have the kubectl configuration file.
+
+The recommended approach for solve this issue is to manage terraform definition for the EKS cluster and kubernetes
+resources in two different stacks, as is pointed in the previous documentation link.
+See: https://github.com/hashicorp/terraform-provider-kubernetes/blob/main/_examples/eks/README.md
+
+
 
 ### Terraform
-The Makefile contains a set of specific targets to use during the development or deployment phase.
+
+In both subdirectories there is a Makefile that contains a set of specific targets to use during the development or deployment phase.
 
 ```shell
 make

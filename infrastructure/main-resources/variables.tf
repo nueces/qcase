@@ -141,13 +141,3 @@ variable "eks_managed_node_groups" {
 }
 
 #############################################################################
-# HELM
-#############################################################################
-
-variable "helm_deployment_tag" {
-  description = "The tag to retrieve the container image to deploy."
-  type        = string
-  default     = "latest" # use "stable" for production environments
-}
-
-#############################################################################

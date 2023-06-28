@@ -2,12 +2,6 @@
 ## Helm deployments
 ##
 
-locals {
-  replica_count = length(local.availability_zones)
-  commit_tag    = one([for tag in data.aws_ecr_image.qweb.image_tags : tag if can(regex("^[a-z0-9]{8}$", tag))])
-
-}
-
 #############################################################################
 ##
 ## Load balancer
@@ -28,7 +22,7 @@ resource "helm_release" "load-balancer" {
 
   set {
     name  = "vpcId"
-    value = module.vpc.vpc_id
+    value = data.aws_eks_cluster.cluster.vpc_config.0.vpc_id
   }
 
   set {
@@ -48,7 +42,7 @@ resource "helm_release" "load-balancer" {
 
   set {
     name  = "clusterName"
-    value = module.eks.cluster_name
+    value = data.aws_eks_cluster.cluster.id
   }
 }
 
@@ -56,14 +50,7 @@ resource "helm_release" "load-balancer" {
 ##
 ## Applications
 
-data "aws_ecr_repository" "qweb" {
-  name = "${local.project_name}/qweb-${var.environment}"
-}
 
-data "aws_ecr_image" "qweb" {
-  repository_name = "${local.project_name}/qweb-${var.environment}"
-  image_tag       = var.helm_deployment_tag
-}
 
 # TODO: Use an object map to declare the charts to be deployed and implement a for_each to replace hardcoded values.
 resource "helm_release" "qweb" {
@@ -73,7 +60,7 @@ resource "helm_release" "qweb" {
 
   set {
     name  = "replicaCount"
-    value = local.replica_count
+    value = var.deployment_replicas
   }
 
   set {

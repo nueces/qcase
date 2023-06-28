@@ -31,20 +31,6 @@ provider "aws" {
   }
 }
 
-provider "kubernetes" {
-  host                   = data.aws_eks_cluster.cluster.endpoint
-  cluster_ca_certificate = base64decode(data.aws_eks_cluster.cluster.certificate_authority.0.data)
-  token                  = data.aws_eks_cluster_auth.cluster.token
-}
-
-provider "helm" {
-  kubernetes {
-    host                   = data.aws_eks_cluster.cluster.endpoint
-    cluster_ca_certificate = base64decode(data.aws_eks_cluster.cluster.certificate_authority.0.data)
-    token                  = data.aws_eks_cluster_auth.cluster.token
-  }
-}
-
 #############################################################################
 ## Data resources
 ##
@@ -60,25 +46,16 @@ data "aws_availability_zones" "available" {
   }
 }
 
-data "aws_eks_cluster" "cluster" {
-  name       = module.eks.cluster_name
-  depends_on = [module.eks.cluster_name]
-}
-
-data "aws_eks_cluster_auth" "cluster" {
-  name       = module.eks.cluster_name
-  depends_on = [module.eks.cluster_name]
-}
-
 #############################################################################
 ## locals and project wide configuration
 ##
 
 locals {
   availability_zones = coalesce(var.availability_zones, slice(data.aws_availability_zones.available.names, 0, var.availability_zones_amount))
-  configurations     = yamldecode(file(join("/", [path.root, "..", "configuration.yml"])))
+  project_root       = join("/", [path.root, "..", ".."])
+  configurations     = yamldecode(file(join("/", [local.project_root, "configuration.yml"])))
   project_name       = local.configurations.project_name
-  project_charts     = join("/", [path.root, "..", "charts"])
+  cluster_name       = local.configurations.project_name
 }
 
 #############################################################################
