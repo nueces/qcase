@@ -48,6 +48,8 @@ Usage: make <target>  [one or more targets separated by spaces and in the order 
 			Show this help.
 	init
 			Run terraform init.
+	reconfigure
+			Run terraform init --reconfigure.
 	plan
 			Run terraform format, and terraform plan storing the plan for the apply phase.
 	plan-destroy
@@ -66,5 +68,4 @@ Usage: make <target>  [one or more targets separated by spaces and in the order 
 			Runs fmt target and terraform validate.
 	clean
 			Clean saved plans and logs.
-
 ```

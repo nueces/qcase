@@ -133,11 +133,11 @@ Inside the directory `infratructure` directory there are two subdirectories.
    that like IAM roles and policies.
 
 
-Each subdirectory contains a Makefile with a set of specific targets to use during the development phase.
+## Makefile
+Each directory that contains terraform files has a Makefile with a set of specific targets to use during the development
+phase.
 
 ```shell
-make
-
 Usage: make <target>  [one or more targets separated by spaces and in the order that their would executed]
 
  The following targets are available: 
@@ -146,6 +146,8 @@ Usage: make <target>  [one or more targets separated by spaces and in the order 
 			Show this help.
 	init
 			Run terraform init.
+	reconfigure
+			Run terraform init --reconfigure.
 	plan
 			Run terraform format, and terraform plan storing the plan for the apply phase.
 	plan-destroy
@@ -164,7 +166,6 @@ Usage: make <target>  [one or more targets separated by spaces and in the order 
 			Runs fmt target and terraform validate.
 	clean
 			Clean saved plans and logs.
-
 ```
 
 
@@ -333,7 +334,7 @@ http://k8s-default-qweb-dad93923ee-32077523.eu-central-1.elb.amazonaws.com
 Change the background color of the QWeb app to trigger a new deployment
 ```shell
 export BG_COLOR="red" && \
-  sed -i -E "s/(background-color:\ )(.*)/\1$BG_COLOR;/" applications/qweb/src/index.html && \
+      sed -i -E "s/(background-color:\ )(.*)/\1$BG_COLOR;/" applications/qweb/src/index.html && \
   grep background-color applications/qweb/src/index.html
 ```
 
@@ -385,10 +386,7 @@ Press CTRL+C to quit
 
 ## TODO:
 
-- Investigate how to reuse a GitHub workflows definition to reduce the code duplication.
-  See: https://docs.github.com/en/actions/using-workflows/reusing-workflows
-- Modify the terraform backend configurations to remove the hardcoded values and provided that values via cli arguments 
-- Merge the Reclaim/Destroy workflows into one.
+- Merge the Reclaim/Destroy workflows into a single one.
 
 
 ### Things than can be improved:

@@ -108,7 +108,7 @@ variable "eks_managed_node_group_defaults" {
   default = {
     ami_type       = "AL2_x86_64"
     capacity_type  = "SPOT"
-    instance_types = ["t3.micro"]
+    instance_types = ["t3.medium", "t3.large"]
     min_size       = 1
     max_size       = 1
     desired_size   = 1
@@ -132,7 +132,7 @@ variable "eks_managed_node_groups" {
     name                       = "qweb"
     description                = "qweb nodes"
     capacity_type              = "SPOT"
-    instance_types             = ["t3.micro", "t3.small"]
+    instance_types             = ["t3.medium", "t3.large"]
     min_size                   = 1
     max_size                   = 6
     desired_size               = 3

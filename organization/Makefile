@@ -10,10 +10,22 @@ define usage
 	@echo "\n"
 endef
 
+PROJECT_CONFIGURATION = ../configuration.yml
 
 ifdef targets
 options := $(foreach target,$(targets),-target $(target))
 endif
+
+ifndef AWS_DEFAULT_REGION
+	AWS_DEFAULT_REGION = $(shell sed  -n -E "s/[[:space:]]*(aws_region\:)[[:space:]]*(.*)/\2/1p" < ${PROJECT_CONFIGURATION})
+endif
+
+AWS_ACCOUNT_ID  = $(shell aws sts get-caller-identity --query Account --output text)
+STACK_NAME      = $(shell basename $(dir $(abspath $(firstword $(MAKEFILE_LIST)))))
+SUFFIX_NAME     = $(shell sed  -n -E "s/[[:space:]]*(bucket_suffix_name\:)[[:space:]]*(.*)/\2/1p" < ${PROJECT_CONFIGURATION})
+
+TF_BUCKET = ${AWS_ACCOUNT_ID}-${AWS_DEFAULT_REGION}-${SUFFIX_NAME}
+TF_KEY    = ${STACK_NAME}.tfstate
 
 
 .PHONY: help
@@ -24,7 +36,18 @@ help: ##@ Show this help.
 .PHONY: init
 init: ##@ Run terraform init.
 	terraform --version
-	terraform init
+	terraform init \
+		-backend-config="bucket=${TF_BUCKET}" \
+		-backend-config="key=${TF_KEY}" \
+		-backend-config="region=${AWS_DEFAULT_REGION}"
+
+.PHONY: reconfigure
+reconfigure: ##@ Run terraform init --reconfigure.
+	terraform --version
+	terraform init --reconfigure\
+		-backend-config="bucket=${TF_BUCKET}" \
+		-backend-config="key=${TF_KEY}" \
+		-backend-config="region=${AWS_DEFAULT_REGION}"
 
 
 .PHONY: plan
