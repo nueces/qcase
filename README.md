@@ -7,6 +7,10 @@
 - Deploy a simple web application.
 - Configure a Load balancer and a deployment policy.
 
+## Repository:
+
+GitHub: https://github.com/nueces/qcase/
+ 
 
 ## Project organization overview
 
@@ -62,7 +66,7 @@ Software:
 - GNU make
 
 
-AWS Configured credentials.
+AWS Configured credentials for GitHub Actions. See **Secrets and variables** in the CI/CD section.
 
 
 ## Bootstrap
@@ -133,11 +137,11 @@ Inside the directory `infratructure` directory there are two subdirectories.
    that like IAM roles and policies.
 
 
-Each subdirectory contains a Makefile with a set of specific targets to use during the development phase.
+#### Makefile
+Each directory that contains terraform files has a Makefile with a set of specific targets to use during the development
+phase.
 
 ```shell
-make
-
 Usage: make <target>  [one or more targets separated by spaces and in the order that their would executed]
 
  The following targets are available: 
@@ -146,6 +150,8 @@ Usage: make <target>  [one or more targets separated by spaces and in the order 
 			Show this help.
 	init
 			Run terraform init.
+	reconfigure
+			Run terraform init --reconfigure.
 	plan
 			Run terraform format, and terraform plan storing the plan for the apply phase.
 	plan-destroy
@@ -164,7 +170,6 @@ Usage: make <target>  [one or more targets separated by spaces and in the order 
 			Runs fmt target and terraform validate.
 	clean
 			Clean saved plans and logs.
-
 ```
 
 
@@ -317,6 +322,22 @@ Each time that there is a new application release the workflow `QWeb Application
 execution of the workflow "" 
 
 
+### Secrets and variables
+
+The following list of secrets and variables needs to be created via the GitHub UI.
+
+#### Secrets
+
+- `AWS_ACCESS_KEY_ID`: An AWS access key associated with an IAM account.
+- `AWS_SECRET_ACCESS_KEY`: The secret key associated with the access key.
+
+#### Variables
+
+- `AWS_ACCOUNT_ID`: AWS account id.
+- `AWS_DEFAULT_REGION`: The Default AWS Region to use.
+- `ENV`: Environment or Stage. e.g.: `dev`, `stg`, `prd`.
+
+
 ## Handy commands
 
 Obtain the application url: 
@@ -333,7 +354,7 @@ http://k8s-default-qweb-dad93923ee-32077523.eu-central-1.elb.amazonaws.com
 Change the background color of the QWeb app to trigger a new deployment
 ```shell
 export BG_COLOR="red" && \
-  sed -i -E "s/(background-color:\ )(.*)/\1$BG_COLOR;/" applications/qweb/src/index.html && \
+      sed -i -E "s/(background-color:\ )(.*)/\1$BG_COLOR;/" applications/qweb/src/index.html && \
   grep background-color applications/qweb/src/index.html
 ```
 
@@ -385,10 +406,9 @@ Press CTRL+C to quit
 
 ## TODO:
 
-- Investigate how to reuse a GitHub workflows definition to reduce the code duplication.
-  See: https://docs.github.com/en/actions/using-workflows/reusing-workflows
-- Modify the terraform backend configurations to remove the hardcoded values and provided that values via cli arguments 
-- Merge the Reclaim/Destroy workflows into one.
+- Creating reusable workflows.
+ - Merge resource creation workflows in a single Workflow to control the execution order.
+ - Merge the Reclaim/Destroy workflows into a single one.
 
 
 ### Things than can be improved:
@@ -400,7 +420,7 @@ Press CTRL+C to quit
 
 #### Workflows:
 
-- Investigate how to reuse a GitHub workflows definition to reduce the code duplication.
+- Investigate how to reuse a GitHub workflows definition to reduce the code duplication. And 
   See: https://docs.github.com/en/actions/using-workflows/reusing-workflows
 
 #### At Bootstrap:

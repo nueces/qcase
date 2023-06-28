@@ -6,12 +6,8 @@ terraform {
     }
   }
 
-  # TODO: Set this values via the -backend-config arguments to support multiples environments
-  #   using different tfstate files. And reading the bucket name from the configuration.yml file.
+  # Configuration values are set via command line options
   backend "s3" {
-    bucket = "887012142425-eu-central-1-terraform-backend-qcase"
-    key    = "organization.tfstate"
-    region = "eu-central-1"
   }
 }
 
