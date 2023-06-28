@@ -1,7 +1,7 @@
 ##############################################################################
-### Load Balancer
-###
-
+## Load Balancer controller requirements
+##
+##############################################################################
 
 module "load-balancer-role" {
   source = "terraform-aws-modules/iam/aws//modules/iam-role-for-service-accounts-eks"
@@ -32,4 +32,3 @@ resource "kubernetes_service_account" "aws-load-balancer-controller" {
     }
   }
 }
-

@@ -1,3 +1,7 @@
+##############################################################################
+## Module outputs to be reused by another modules
+##
+##############################################################################
 
 output "aws" {
   description = "AWS Generic Information"

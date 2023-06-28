@@ -1,3 +1,7 @@
+##############################################################################
+## VPC
+##
+##############################################################################
 
 module "vpc" {
   source  = "terraform-aws-modules/vpc/aws"
@@ -12,12 +16,12 @@ module "vpc" {
   #infra_subnets   = [for k, v in local.availability_zones: cidrsubnet(var.vpc_cidr_block, 8, k + 1 + 85 + 85)]
 
   # We use 85, which is equal to 255/3, to utilize a different set of the cdir range for the subnets in each az:
-  # for a CIRD block 10.0.0.0/16 the resulting subnets are:
+  # for a CIDR block 10.0.0.0/16 the resulting subnets are:
   # - private: 10.0.[1-85].0
   # - public:  10.0.[86-170].0
   # - infra:   10.0.[171-255].0
   #
-  # while for a CIRD block 10.0.0.0/8 the resulting subnets are:
+  # while for a CIDR block 10.0.0.0/8 the resulting subnets are:
   # - private: 10.[1-85].0.0
   # - public:  10.[86-170].0.0
   # - infra:   10.[171-255].0.0

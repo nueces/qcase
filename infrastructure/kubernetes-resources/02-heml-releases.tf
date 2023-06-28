@@ -1,10 +1,11 @@
 #############################################################################
 ## Helm deployments
 ##
+#############################################################################
 
 #############################################################################
-##
 ## Load balancer
+##
 
 resource "helm_release" "load-balancer" {
   name       = "aws-load-balancer-controller"
@@ -47,10 +48,8 @@ resource "helm_release" "load-balancer" {
 }
 
 #############################################################################
-##
 ## Applications
-
-
+##
 
 # TODO: Use an object map to declare the charts to be deployed and implement a for_each to replace hardcoded values.
 resource "helm_release" "qweb" {

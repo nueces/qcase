@@ -1,3 +1,8 @@
+##############################################################################
+## Providers, data resources, and other configuration settings.
+##
+##############################################################################
+
 terraform {
   required_providers {
     aws = {
@@ -73,7 +78,6 @@ data "aws_ecr_image" "qweb" {
 #############################################################################
 ## locals and project wide configuration
 ##
-
 
 locals {
   project_root   = join("/", [path.root, "..", ".."])

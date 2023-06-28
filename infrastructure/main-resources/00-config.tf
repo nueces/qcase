@@ -1,3 +1,8 @@
+##############################################################################
+## Providers, data resources, and other configuration settings.
+##
+##############################################################################
+
 terraform {
   required_providers {
     aws = {

@@ -1,6 +1,7 @@
 #############################################################################
 ## Kubernetes Cluster
 ##
+##############################################################################
 
 module "eks" {
   source  = "terraform-aws-modules/eks/aws"
@@ -25,7 +26,6 @@ module "eks" {
 
   # TODO:
   #   replace with a dynamic block
-  #   move default values to the previous section.
   eks_managed_node_groups = {
     apps = {
       name        = var.eks_managed_node_groups.name
