@@ -27,7 +27,7 @@ jobs:
     defaults:
       run:
         shell: bash
-        working-directory: ./infrastructure
+        working-directory: ./infrastructure/kubernetes-resources
 
     steps:
       - name: Checkout the repository to the runner
@@ -36,10 +36,9 @@ jobs:
       - name: Set environment variables
         working-directory: ./
         run: |
-          SUFFIX_NAME=$(sed -n -E "s/[[:space:]]*(bucket_suffix_name\:)[[:space:]]*(.*)/\2/1p" < configuration.yml)
+          SUFFIX_NAME=$(sed -n -E "s/[[:space:]]*(bucket_suffix_name\:)[[:space:]]*(.*)/\2/1p" < ../../configuration.yml)
           echo "TF_BUCKET=${{ env.AWS_ACCOUNT_ID }}-${{ env.AWS_DEFAULT_REGION }}-$SUFFIX_NAME" >> $GITHUB_ENV
           echo "TF_KEY=$(basename $(pwd)).tfstate" >> $GITHUB_ENV
-
 
       - name: Setup Terraform with specified version on the runner
         uses: hashicorp/setup-terraform@v2.0.3
