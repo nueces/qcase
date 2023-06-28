@@ -1,6 +1,7 @@
 .idea
 venv/
 logs/*
+vault/*
 applications/**/venv/
 **/__pycache__/**
 #
@@ -17,3 +18,4 @@ organization/*.tfstate
 organization/.terraform/
 #
 kubeconfig
+debug.yml

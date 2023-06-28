@@ -20,6 +20,15 @@ on:
     branches:
       - master
 
+  # Run after the workflow "Organization Infrastructure Deployment" to publish a first image
+  workflow_run:
+    workflows:
+      - "Organization Infrastructure Deployment"
+    types:
+     - completed
+    branches:
+      - master
+
 env:
   ENV: ${{ vars.ENV }}
   AWS_DEFAULT_REGION: ${{ vars.AWS_DEFAULT_REGION }}
