@@ -10,6 +10,13 @@ define usage
 	@echo "\n"
 endef
 
+require-command-%:
+	@if [ "${${*}}" = "" ]; then \
+  		CMD=$$(echo "${*}" | tr [:upper:] [:lower:] );\
+		echo "$$CMD: command not found. This command is required execute this target"; \
+		exit 127;\
+	 fi
+
 # Configurations
 UTILS=utils
 INFRASTRUCTURE=infrastructure
@@ -26,6 +33,9 @@ ISORT    = ${VENV_PATH}/bin/isort
 PYLINT   = ${VENV_PATH}/bin/pylint
 YAMLLINT = ${VENV_PATH}/bin/yamllint -c .yamllint.yml
 YQ_GET   = ${VENV_PATH}/bin/yq < ${PROJECT_CONFIGURATION} -r
+
+# Check for some dependencies that aren't common and need special user configurations to be used.
+GH := $(shell command -v gh)
 
 #############################################################################
 
@@ -78,10 +88,12 @@ deploy: ##@ Deploy infrastructure running terraform.
 	$(info >>> For more specific terraform related targets. Execute `make help` in the ${INFRASTRUCTURE} directory)
 	make -C ${INFRASTRUCTURE} deploy
 
+
 .PHONY: destroy
 destroy: ##@ Destroy infrastructure running terraform.
 	$(info >>> For more specific terraform related targets. Execute `make help` in the ${INFRASTRUCTURE} directory)
 	make -C ${INFRASTRUCTURE} destroy
+
 
 .PHONY: python-lint
 python-lint: ##@ Run linting tools for python code in the ${UTILS_SRC} directory.
@@ -90,21 +102,65 @@ python-lint: ##@ Run linting tools for python code in the ${UTILS_SRC} directory
 	${ISORT} ${UTILS}
 	${PYLINT} ${UTILS}
 
+
 .PHONY: terraform-lint
 terraform-lint: ##@Run linting tools for terraform code in the ${INFRASTRUCTURE} directory.
 	$(info Running Terraform linting tools.)
 	make -C ${INFRASTRUCTURE} fmt validate
+
 
 .PHONY: yaml-lint
 yaml-lint: ##@ Run linting tools for yaml code in the .github directory and the configuration.yml, and .yamllint.yml files.
 	$(info Running Yaml linting tools.)
 	${YAMLLINT} .github ${PROJECT_CONFIGURATION} .yamllint.yml
 
+
 .PHONY: lint
 lint: python-lint yaml-lint terraform-lint ##@ Run linting tools for Python and Terraform code.
 	$(info Lint done!)
+
 
 .PHONY: kubeconfig
 kubeconfig: ##@ Generate a local kubectl configuration file to connect to the k8s cluster.
 	$(info Saving kubeconfig into the project directory)
 	aws eks --region eu-central-1 update-kubeconfig --name ${PROJECT_NAME} --kubeconfig $(CURDIR)/kubeconfig
+
+
+.PHONY: workflow-list
+workflow-list: require-command-GH ##@ List all the configured workflows
+	@gh workflow list --all
+
+
+.PHONY: workflow-run
+workflow-run: require-command-GH ##@ Run a workflow from the list [Interactive]
+	@gh workflow run
+
+
+.PHONY: workflow-enable
+workflow-enable: require-command-GH ##@ Enable a workflow from the list [Interactive]
+	@gh workflow enable
+
+
+.PHONY: workflow-enable-all
+workflow-enable-all: require-command-GH ##@ Enable all the workflows in the project
+	@gh workflow list --all |\
+	sed -n -E "s/(.*)[[:space:]](disabled_manually).*/\1/1p" |\
+      while read line; do \
+		echo "Enabling: $${line}"; \
+        gh workflow enable "$${line}"; \
+      done;
+
+
+.PHONY: workflow-disable
+workflow-disable: require-command-GH ##@ Disable a workflow from the list [Interactive]
+	gh workflow disable
+
+
+.PHONY: workflow-disable-all
+workflow-disable-all: require-command-GH ##@ Disable all the workflows in the project
+	@gh workflow list --all |\
+	sed -n -E "s/(.*)[[:space:]](active).*/\1/1p" |\
+      while read line; do \
+		echo "Disabling: $${line}"; \
+        gh workflow disable "$${line}"; \
+      done;
