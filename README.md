@@ -119,6 +119,19 @@ Usage: make <target>  [one or more targets separated by spaces and in the order 
 			Run linting tools for Python and Terraform code.
 	kubeconfig
 			Generate a local kubectl configuration file to connect to the k8s cluster.
+	workflow-list
+			List all the configured workflows
+	workflow-run
+			Run a workflow from the list [Interactive]
+	workflow-enable
+			Enable a workflow from the list [Interactive]
+	workflow-enable-all
+			Enable all the workflows in the project
+	workflow-disable
+			Disable a workflow from the list [Interactive]
+	workflow-disable-all
+			Disable all the workflows in the project
+
 ```
 
 
@@ -435,13 +448,13 @@ Some documents used as references.
 
 #### ALB docs:
 
-https://docs.aws.amazon.com/eks/latest/userguide/alb-ingress.html
-https://docs.aws.amazon.com/eks/latest/userguide/aws-load-balancer-controller.html
+- https://docs.aws.amazon.com/eks/latest/userguide/alb-ingress.html
+- https://docs.aws.amazon.com/eks/latest/userguide/aws-load-balancer-controller.html
 
 #### Ingress annotations
 
-https://kubernetes-sigs.github.io/aws-load-balancer-controller/v2.5/guide/ingress/annotations/
+- https://kubernetes-sigs.github.io/aws-load-balancer-controller/v2.5/guide/ingress/annotations/
 
 #### Helm debugging.
 
-https://helm.sh/docs/chart_template_guide/debugging/
+- https://helm.sh/docs/chart_template_guide/debugging/
