@@ -19,7 +19,8 @@ require-command-%:
 
 # Configurations
 UTILS=utils
-INFRASTRUCTURE=infrastructure
+INFRASTRUCTURE_MAIN_RESOURCES=infrastructure/main-resources
+INFRASTRUCTURE_KUBERNETES_RESOURCES=infrastructure/kubernetes-resources
 PROJECT_CONFIGURATION=configuration.yml
 
 # Packages installed in the virtualenv place their commands in the bin directory inside virtualenv path.
@@ -85,15 +86,18 @@ pip-uninstall: ##@ Uninstall python dependencies using pip.
 
 .PHONY: deploy
 deploy: ##@ Deploy infrastructure running terraform.
-	$(info >>> For more specific terraform related targets. Execute `make help` in the ${INFRASTRUCTURE} directory)
-	make -C ${INFRASTRUCTURE} deploy
-
+	$(info Deploying infrastructure via terraform)
+	$(info >>> Deploying main-resources infrastructure)
+	make -C ${INFRASTRUCTURE_MAIN_RESOURCES} deploy
+	$(info >>> Deploying kubernetes-resources infrastructure)
+	make -C ${INFRASTRUCTURE_KUBERNETES_RESOURCES} deploy
 
 .PHONY: destroy
 destroy: ##@ Destroy infrastructure running terraform.
-	$(info >>> For more specific terraform related targets. Execute `make help` in the ${INFRASTRUCTURE} directory)
-	make -C ${INFRASTRUCTURE} destroy
-
+	$(info >>> Destroy kubernetes-resources infrastructure)
+	make -C ${INFRASTRUCTURE_KUBERNETES_RESOURCES} destroy
+	$(info >>> Destroy main-resources infrastructure)
+	make -C ${INFRASTRUCTURE_MAIN_RESOURCES} destroy
 
 .PHONY: python-lint
 python-lint: ##@ Run linting tools for python code in the ${UTILS_SRC} directory.
@@ -104,10 +108,12 @@ python-lint: ##@ Run linting tools for python code in the ${UTILS_SRC} directory
 
 
 .PHONY: terraform-lint
-terraform-lint: ##@Run linting tools for terraform code in the ${INFRASTRUCTURE} directory.
+terraform-lint: ##@Run linting tools for terraform code in the infrastructure directory.
 	$(info Running Terraform linting tools.)
-	make -C ${INFRASTRUCTURE} fmt validate
-
+	$(info >>> main-resources infrastructure)
+	make -C ${INFRASTRUCTURE_MAIN_RESOURCES} fmt validate
+	$(info >>> kubernetes-resources infrastructure)
+	make -C ${INFRASTRUCTURE_KUBERNETES_RESOURCES} fmt validate
 
 .PHONY: yaml-lint
 yaml-lint: ##@ Run linting tools for yaml code in the .github directory and the configuration.yml, and .yamllint.yml files.
@@ -127,7 +133,7 @@ kubeconfig: ##@ Generate a local kubectl configuration file to connect to the k8
 
 
 .PHONY: workflow-list
-workflow-list: require-command-GH ##@ List all the configured workflows
+workflow-list: require-command-GH ##@ List all configured workflows
 	@gh workflow list --all
 
 
@@ -142,7 +148,7 @@ workflow-enable: require-command-GH ##@ Enable a workflow from the list [Interac
 
 
 .PHONY: workflow-enable-all
-workflow-enable-all: require-command-GH ##@ Enable all the workflows in the project
+workflow-enable-all: require-command-GH ##@ Enable all workflows in the project
 	@gh workflow list --all |\
 	sed -n -E "s/(.*)[[:space:]](disabled_manually).*/\1/1p" |\
       while read line; do \
@@ -157,7 +163,7 @@ workflow-disable: require-command-GH ##@ Disable a workflow from the list [Inter
 
 
 .PHONY: workflow-disable-all
-workflow-disable-all: require-command-GH ##@ Disable all the workflows in the project
+workflow-disable-all: require-command-GH ##@ Disable all workflows in the project
 	@gh workflow list --all |\
 	sed -n -E "s/(.*)[[:space:]](active).*/\1/1p" |\
       while read line; do \
