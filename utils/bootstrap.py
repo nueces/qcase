@@ -2,11 +2,10 @@
 Bootstrap tasks for creating basic resources need to use terraform and ansible.
 """
 import logging
-import os.path
 import stat
 import sys
-from datetime import datetime
 from argparse import ArgumentParser
+from datetime import datetime
 from logging import Logger
 from pathlib import Path
 
@@ -154,7 +153,7 @@ def execute_tasks(logger: Logger, config: dict) -> int:
     logger.info("Creating bucket: %s", bucket_name)
     success.append(create_bucket(logger, bucket_name, region))
 
-    logger.info("Creating create keypair: %s", config.get('key_name'))
+    logger.info("Creating create keypair: %s", config.get("key_name"))
     success.append(create_key_pair(logger, config.get("key_name"), Path(config.get("vault_directory")), region))
 
     if not all(success):
@@ -165,14 +164,14 @@ def execute_tasks(logger: Logger, config: dict) -> int:
     return 0 if all(success) else 1
 
 
-def main():
+def main() -> int:  # pylint: disable=too-many-locals
     """
     Run all the task in the bootstrap script.
 
     :return: exit status code. 0 Success, 1 Fail.
     """
     # the task name is based in the filename
-    task = os.path.splitext(os.path.basename(__file__))[0]
+    task = Path(__file__).stem
     formatter = logging.Formatter(
         fmt="%(asctime)s:%(name)s:%(levelname)s:%(message)s",
         datefmt="%Y-%m-%d %H%M%S",
