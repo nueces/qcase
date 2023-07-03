@@ -76,7 +76,7 @@ jobs:
         id: comment
         if: github.event_name == 'pull_request'
         env:
-          OUTPUT: "${{ steps.publish.outputs.stdout }}"
+          OUTPUT: "${{ steps.build.outputs.stdout }}"
 
         with:
           script: |
