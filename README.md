@@ -354,8 +354,9 @@ The following list of secrets and variables needs to be created via the GitHub U
 
 Obtain the application url: 
 ```shell
-kubectl get ingress qweb \
-  --template "http://{{ range (index .status.loadBalancer.ingress 0) }}{{.}}{{ end }}"
+make kubeconfig && \
+kubectl --kubeconfig kubeconfig \
+  ingress qweb --template "http://{{ range (index .status.loadBalancer.ingress 0) }}{{.}}{{ end }}"
 ```
 example output
 ```shell
@@ -407,14 +408,8 @@ Press CTRL+C to quit
 
 ### Know issues.
 
-- The `applications-qweb` workflow does not post the log into the pr.
+- None so far :tada:
 
-- Terraform do not allways detect changes in the Helm charts, and for that reason the plan shows no changes.
-  *Workaround:* publish a new image
-  ```shell
-   make -C applications/qweb/ publish
-  ```
-  
 
 ## TODO:
 
