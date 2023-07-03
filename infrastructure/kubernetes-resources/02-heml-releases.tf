@@ -51,7 +51,18 @@ resource "helm_release" "load-balancer" {
 ## Applications
 ##
 
-# TODO: Use an object map to declare the charts to be deployed and implement a for_each to replace hardcoded values.
+## TODO: Use an object map to declare the charts to be deployed and implement a for_each to replace hardcoded values.
+
+# This external data source, create a map with the sha256sum for each file in the chart, this is used to force a
+# new deployment if there is any change in the charts, even if the version was not updated.
+
+data "external" "sha256sum_charts_qweb" {
+  program = [
+    "python3", "${local.project_root}/utils/sha256sum-dir-content.py", "--output", "json",
+    "--directory", join("/", [local.project_charts, "qweb"])
+  ]
+}
+
 resource "helm_release" "qweb" {
   name = "qweb"
 
@@ -85,6 +96,11 @@ resource "helm_release" "qweb" {
   set {
     name  = "service.port"
     value = "80"
+  }
+
+  set {
+    name  = "charts_sha256sum"
+    value = jsonencode(data.external.sha256sum_charts_qweb.result)
   }
 
 }
