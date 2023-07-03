@@ -61,32 +61,46 @@ jobs:
           python-version: 3.10.12
 
       - name: Create virtualenv and install project dependencies
+        id: dependencies
         run: |
-          python3 -m venv venv
-          ./venv/bin/pip install --requirement requirements.txt
+          EOF=$(dd if=/dev/urandom bs=15 count=1 status=none | base64)
+          echo "stdout<<$EOF" >> "$GITHUB_OUTPUT"
+          python3 -m venv venv  >> "$GITHUB_OUTPUT"
+          ./venv/bin/pip install --requirement requirements.txt  >> "$GITHUB_OUTPUT"
+          echo "$EOF" >> "$GITHUB_OUTPUT"
 
-      - name: Build and tag the Docker image.
+      - name: Build and tag the application image.
         id: build
         working-directory: ./applications/qweb
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-        run: make build tag
+        run: |
+          EOF=$(dd if=/dev/urandom bs=15 count=1 status=none | base64)
+          echo "stdout<<$EOF" >> "$GITHUB_OUTPUT"
+          make build tag" >> "$GITHUB_OUTPUT"
+          echo "$EOF" >> "$GITHUB_OUTPUT"
 
-      - uses: actions/github-script@v6.4.1
+      - name: Create a PR comment with the build output
+        uses: actions/github-script@v6.4.1
         id: comment
         if: github.event_name == 'pull_request'
-        env:
-          OUTPUT: "${{ steps.build.outputs.stdout }}"
-
         with:
           script: |
-            const output = `#### Publish outcome: \`${{ steps.build.outcome }}\`
-            
+            const output = `\#### Project dependencies install outcome:  \`${{ steps.dependencies.outcome }}\`
+            #### Build application image outcome: \`${{ steps.build.outcome }}\`
             <details>
-            <summary>Show build log</summary>
+            <summary>Dependencies install log</summary>
 
             \`\`\`sh\n
-            ${process.env.OUTPUT}
+            ${{ steps.dependencies.outputs.stdout }}
+            \`\`\`
+            </details>
+
+            <details>
+            <summary>Show build application image log</summary>
+
+            \`\`\`sh\n
+            ${{ steps.build.outputs.stdout }}
             \`\`\`
             </details>
 
@@ -103,7 +117,7 @@ jobs:
         if: steps.build.outcome == 'failure'
         run: exit 1
 
-      - name: Push Docker image to Amazon ECR
+      - name: Push the application image to Amazon ECR
         id: publish
         working-directory: ./applications/qweb
         env:
