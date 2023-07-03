@@ -112,7 +112,7 @@ Usage: make <target>  [one or more targets separated by spaces and in the order 
 	python-lint
 			Run linting tools for python code in the ${UTILS_SRC} directory.
 	terraform-lint
-			Run linting tools for terraform code in the ${INFRASTRUCTURE} directory.
+			Run linting tools for terraform code in the infrastructure directory.
 	yaml-lint
 			Run linting tools for yaml code in the .github directory and the configuration.yml, and .yamllint.yml files.
 	lint
@@ -120,18 +120,17 @@ Usage: make <target>  [one or more targets separated by spaces and in the order 
 	kubeconfig
 			Generate a local kubectl configuration file to connect to the k8s cluster.
 	workflow-list
-			List all the configured workflows
+			List all configured workflows
 	workflow-run
 			Run a workflow from the list [Interactive]
 	workflow-enable
 			Enable a workflow from the list [Interactive]
 	workflow-enable-all
-			Enable all the workflows in the project
+			Enable all workflows in the project
 	workflow-disable
 			Disable a workflow from the list [Interactive]
 	workflow-disable-all
-			Disable all the workflows in the project
-
+			Disable all workflows in the project
 ```
 
 
