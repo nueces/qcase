@@ -24,7 +24,6 @@ on:
   # This workflow would run if a new version of the QWeb app was built
   workflow_run:
     workflows:
-      - "QWeb Application build and release"
       - "Project Infrastructure Deployment"
     types:
      - completed
