@@ -51,6 +51,7 @@ PROJECT_NAME   = $(shell ${YQ_GET} .project_name)
 help: ##@ Show this help.
 	@$(usage)
 
+
 .PHONY: bootstrap
 bootstrap: ##@ Create the virtualenv to run pip-install target.
 	rm -rf ${VENV_PATH}
@@ -91,6 +92,7 @@ deploy: ##@ Deploy infrastructure running terraform.
 	make -C ${INFRASTRUCTURE_MAIN_RESOURCES} deploy
 	$(info >>> Deploying kubernetes-resources infrastructure)
 	make -C ${INFRASTRUCTURE_KUBERNETES_RESOURCES} deploy
+
 
 .PHONY: destroy
 destroy: ##@ Destroy infrastructure running terraform.
