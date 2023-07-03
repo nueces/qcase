@@ -77,7 +77,7 @@ jobs:
         run: |
           EOF=$(dd if=/dev/urandom bs=15 count=1 status=none | base64)
           echo "stdout<<$EOF" >> "$GITHUB_OUTPUT"
-          make build tag" >> "$GITHUB_OUTPUT"
+          make build tag >> "$GITHUB_OUTPUT"
           echo "$EOF" >> "$GITHUB_OUTPUT"
 
       - name: Create a PR comment with the build output
