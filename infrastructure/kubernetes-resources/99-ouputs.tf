@@ -4,5 +4,5 @@
 ##############################################################################
 
 output "sha256sum_qweb" {
-  value = data.external.sha256sum_charts_qweb.result
+  value = local.sha256sum_charts_qweb
 }
